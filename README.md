@@ -1,4 +1,4 @@
-# Upgrade Thecus-N2310 N4310 to user SMB2 protocol
+# Upgrades Thecus N2310 and possibly also N4310
 
 Some updates to this nice fast and power efficient server.
 
