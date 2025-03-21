@@ -80,6 +80,85 @@ yum localinstall openssl-libs-1.0.1e-36.rpm openssl-1.0.1e-36.rpm make-3.82-15.r
 # verify
 openssl s_client -connect www.google.com:443 -tls1_2
 ```
+### Add Rygel media serwvr
+
+``` bash
+# 
+# yum install rygel
+
+declare -a arr_up=("alsa-lib-1.0.25-1.fc16.ppc"
+                "gssdp-0.12.1-1.fc16.ppc"
+                "gtk3-3.2.4-1.fc16.ppc"
+                "gupnp-0.18.1-1.fc16.ppc"
+                "gupnp-dlna-0.6.4-3.fc16.ppc"
+                "iso-codes-3.32-1.fc16.noarch"
+                "libgee-0.6.4-1.fc16.ppc"
+                "orc-0.4.16-5.fc16.ppc"
+                "rygel-0.12.7-1.fc16.ppc"
+                )
+
+declare -a arr_rel=(
+                "cairo-gobject-1.10.2-4.fc16.ppc"
+                "cdparanoia-libs-10.2-10.fc15.ppc"
+                "glib-networking-2.30.1-2.fc16.ppc"
+                "gsettings-desktop-schemas-3.2.0-1.fc16.noarch"
+                "gstreamer-0.10.35-1.fc16.ppc"
+                "gstreamer-plugins-base-0.10.35-1.fc16.ppc"
+                "gstreamer-tools-0.10.35-1.fc16.ppc"
+                "gupnp-av-0.9.1-1.fc16.ppc"
+                "libXv-1.0.6-2.fc15.ppc"
+                "libmodman-2.0.1-2.fc15.ppc"
+                "libproxy-0.4.7-1.fc16.ppc"
+                "libsoup-2.36.1-2.fc16.ppc"
+                "libtheora-1.1.1-1.fc15.ppc"
+                "libvisual-0.4.0-10.fc15.ppc"
+                "xml-common-0.6.3-34.fc15.noarch"
+                )
+
+export URL=http://dl.fedoraproject.org/pub/archive/fedora-secondary/updates/16/ppc
+export INSTALL_LIST = ""
+for i in "${arr_up[@]}"
+do
+   wget ${URL}/$i.rpm  -O $i.rpm --no-check-certificate
+   INSTALL_LIST=$INSTALL_LIST" $i.rpm"
+   # or do whatever with individual element of the array
+done
+
+export URL=http://dl.fedoraproject.org/pub/archive/fedora-secondary/releases/16/Fedora/ppc/os/Packages/
+for i in "${arr_rel[@]}"
+do
+   wget ${URL}/$i.rpm  -O $i.rpm --no-check-certificate
+   INSTALL_LIST=$INSTALL_LIST" $i.rpm"
+   # or do whatever with individual element of the array
+done
+
+yum localinstall $INSTALL_LIST
+
+
+
+cat >> /usr/bin/mediaserver<< EOF
+rygel
+EOF
+
+
+chmox +x /usr/bin/mediaserver
+
+cat >> /img/bin/check_twonky<< EOF
+echo "Rygel instaled"
+EOF
+
+chmod +x /img/bin/check_twonky
+
+
+
+sed -i '/enable-transcoding=true/c\enable-transcoding=false' /etc/rygel.conf
+sed -i '/[Playbin]\nenabled=true/c\[Playbin]\nenabled=false' /etc/rygel.conf
+sed -i '/=@REALNAME@/c\title=N2310' /etc/rygel.conf
+
+sed -i '/twonky=0/c\twonky=0' /img/bin/conf/sysconf.N2310.txt
+sed -i '/media=0/c\media=1' /img/bin/conf/sysconf.N2310.txt
+
+```
 
 ### Add twonky media server 
 
